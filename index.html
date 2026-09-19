@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeonMerge — Un puzzle 100% couleur</title>
+<meta name="description" content="Fusionne les tuiles de même couleur, enchaîne les combos, déclenche la pulsation. Un puzzle néon sans le moindre chiffre, gratuit et 100% hors ligne.">
+<meta name="theme-color" content="#0B0A14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="NeonMerge — Un puzzle 100% couleur">
+<meta property="og:description" content="Fusionne les couleurs, enchaîne les combos, déclenche la pulsation. Sans le moindre chiffre.">
+<meta property="og:image" content="https://dam-des.github.io/neonmerge-site/img/og.png">
+<meta property="og:url" content="https://dam-des.github.io/neonmerge-site/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230B0A14'/%3E%3Ccircle cx='50' cy='50' r='27' fill='none' stroke='%2329C7FF' stroke-width='12'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #0B0A14;
+    --surface: #15132A;
+    --surface-raised: #26234A;
+    --ink: #F5F3FF;
+    --slate: #9C98C6;
+    --cyan: #29C7FF;
+    --magenta: #FF29B4;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    margin: 0; background: var(--night); color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 17px; line-height: 1.6;
+  }
+  h1, h2, h3, .display { font-family: 'Anton', 'Impact', sans-serif; font-weight: 400; letter-spacing: .01em; margin: 0; }
+  a { color: var(--cyan); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 18px 0; border-bottom: 1px solid var(--surface-raised); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 8px; flex: none;
+    background: linear-gradient(135deg, #3D6BFF, #29FFA8 40%, #FFE629 65%, #FF29B4);
+  }
+  .logo-text { font-family: 'Anton', sans-serif; font-size: 24px; letter-spacing: .04em; }
+  nav a { color: var(--slate); text-decoration: none; font-size: 15px; }
+  nav a:hover { color: var(--ink); }
+  footer { border-top: 1px solid var(--surface-raised); padding: 28px 0; margin-top: 48px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; color: var(--slate); font-size: 14px; }
+  footer a { color: var(--slate); }
+  footer a:hover { color: var(--ink); }
+
+  .hero { padding: 68px 0 44px; text-align: center; }
+  .hero h1 { font-size: clamp(48px, 10vw, 88px); line-height: 1.02; }
+  .rainbow {
+    background: linear-gradient(90deg, #3D6BFF, #29C7FF, #29FFA8, #B6FF29, #FFE629, #FF9D29, #FF4529, #FF29B4);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { max-width: 540px; margin: 20px auto 0; color: var(--slate); font-size: 20px; }
+  .cta-row { display: flex; gap: 14px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+  .store-badge {
+    display: inline-flex; align-items: center; gap: 8px; background: var(--surface);
+    border: 1px solid var(--surface-raised); color: var(--slate); border-radius: 12px;
+    padding: 11px 22px; font-size: 15px; text-decoration: none;
+  }
+  a.store-badge { color: var(--ink); }
+  a.store-badge:hover { border-color: var(--cyan); }
+
+  .tile {
+    --c: #29C7FF; display: inline-flex; width: 58px; height: 58px; border-radius: 14px; flex: none;
+    background: var(--c); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 55%, transparent);
+    align-items: center; justify-content: center;
+  }
+  .tile svg { width: 100%; height: 100%; fill: none; stroke: rgba(0,0,0,.4); stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+  .tile.sm { width: 44px; height: 44px; border-radius: 11px; box-shadow: 0 0 14px color-mix(in srgb, var(--c) 45%, transparent); }
+  .strip { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 44px auto 0; max-width: 560px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .strip .tile { animation: glow 3.2s ease-in-out infinite; }
+    .strip .tile:nth-child(2) { animation-delay: .2s; } .strip .tile:nth-child(3) { animation-delay: .4s; }
+    .strip .tile:nth-child(4) { animation-delay: .6s; } .strip .tile:nth-child(5) { animation-delay: .8s; }
+    .strip .tile:nth-child(6) { animation-delay: 1s; } .strip .tile:nth-child(7) { animation-delay: 1.2s; }
+    .strip .tile:nth-child(8) { animation-delay: 1.4s; }
+  }
+  @media (max-width: 440px) { .strip { max-width: 270px; } }
+  @keyframes glow { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  section.gallery { padding: 20px 0 8px; }
+  .shots { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .shots-inner { display: flex; gap: 16px; width: max-content; margin: 0 auto; padding: 8px 24px 20px; }
+  .shots img {
+    width: 210px; height: auto; flex: none; scroll-snap-align: center;
+    border-radius: 22px; border: 1px solid var(--surface-raised); background: var(--surface);
+  }
+
+  section.features { padding: 56px 0 24px; border-top: 1px solid var(--surface-raised); margin-top: 24px; }
+  .features h2 { font-size: 40px; text-align: center; margin-bottom: 36px; }
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .feature-card { background: var(--surface); border: 1px solid var(--surface-raised); border-radius: 14px; padding: 22px; }
+  .feature-card h3 { font-size: 24px; margin: 16px 0 8px; }
+  .feature-card p { color: var(--slate); font-size: 16px; margin: 0; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="s-circle" viewBox="0 0 100 100"><circle cx="50" cy="50" r="24"/></symbol>
+    <symbol id="s-square" viewBox="0 0 100 100"><rect x="28" y="28" width="44" height="44" rx="3"/></symbol>
+    <symbol id="s-triangle" viewBox="0 0 100 100"><polygon points="50,25 76,72 24,72"/></symbol>
+    <symbol id="s-diamond" viewBox="0 0 100 100"><polygon points="50,20 80,50 50,80 20,50"/></symbol>
+    <symbol id="s-star" viewBox="0 0 100 100"><polygon points="50.0,22.0 58.2,41.7 79.5,43.4 63.3,57.3 68.2,78.1 50.0,67.0 31.8,78.1 36.7,57.3 20.5,43.4 41.8,41.7"/></symbol>
+    <symbol id="s-hexagon" viewBox="0 0 100 100"><polygon points="50.0,22.0 74.2,36.0 74.2,64.0 50.0,78.0 25.8,64.0 25.8,36.0"/></symbol>
+    <symbol id="s-pentagon" viewBox="0 0 100 100"><polygon points="50.0,22.0 76.6,41.3 66.5,72.7 33.5,72.7 23.4,41.3"/></symbol>
+    <symbol id="s-plus" viewBox="0 0 100 100"><path d="M50 24V76M24 50H76"/></symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="./">
+      <div class="logo-mark"></div>
+      <span class="logo-text">NEONMERGE</span>
+    </a>
+    <nav><a href="legal/">Confidentialité</a></nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <h1>Un puzzle<br>100% <span class="rainbow">couleur</span></h1>
+    <p class="tagline">
+      Fusionne les tuiles de même couleur, enchaîne les combos, déclenche la pulsation.
+      Pas un chiffre à lire. Gratuit, 100% hors ligne.
+    </p>
+    <div class="cta-row">
+      <span class="store-badge">📱 Bientôt sur l'App Store</span>
+      <span class="store-badge">🤖 Bientôt sur Google Play</span>
+    </div>
+    <div class="strip" aria-hidden="true">
+      <span class="tile" style="--c:#3D6BFF"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-circle"/></svg></span>
+      <span class="tile" style="--c:#29C7FF"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-square"/></svg></span>
+      <span class="tile" style="--c:#29FFA8"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-triangle"/></svg></span>
+      <span class="tile" style="--c:#B6FF29"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-diamond"/></svg></span>
+      <span class="tile" style="--c:#FFE629"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star"/></svg></span>
+      <span class="tile" style="--c:#FF9D29"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-hexagon"/></svg></span>
+      <span class="tile" style="--c:#FF4529"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-pentagon"/></svg></span>
+      <span class="tile" style="--c:#FF29B4"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-plus"/></svg></span>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="shots"><div class="shots-inner">
+      <img src="img/shot-1.webp" alt="Plateau 4×4 avec deux tuiles bleues à fusionner" width="440" height="956" loading="lazy">
+      <img src="img/shot-2.webp" alt="Tuiles de plusieurs couleurs et formes en cours de partie" width="440" height="956" loading="lazy">
+      <img src="img/shot-3.webp" alt="Légende de l'ordre des paliers, du cercle bleu à la croix magenta" width="440" height="956" loading="lazy">
+      <img src="img/shot-4.webp" alt="Écran de statistiques et records par niveau" width="440" height="956" loading="lazy">
+      <img src="img/shot-5.webp" alt="Mode Survie avec une case bloquée sur le plateau" width="440" height="956" loading="lazy">
+    </div></div>
+  </section>
+
+  <section class="features">
+    <div class="wrap">
+      <h2>Comment ça marche</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="tile sm" style="--c:#3D6BFF"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-circle"/></svg></span>
+          <h3>Lis en couleur</h3>
+          <p>Chaque palier a sa couleur et sa forme. Jamais un chiffre à lire : d'un coup d'œil, tu sais ce qui fusionne.</p>
+        </div>
+        <div class="feature-card">
+          <span class="tile sm" style="--c:#FFE629"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-star"/></svg></span>
+          <h3>Enchaîne les combos</h3>
+          <p>Plusieurs fusions dans le même geste déclenchent un combo : bonus de score, vibration et son plus marqués.</p>
+        </div>
+        <div class="feature-card">
+          <span class="tile sm" style="--c:#B6FF29"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-diamond"/></svg></span>
+          <h3>Tuile prisme</h3>
+          <p>Rare et irisée, elle se fusionne avec n'importe quelle tuile normale. Un joker qui peut sauver une partie.</p>
+        </div>
+        <div class="feature-card">
+          <span class="tile sm" style="--c:#FF29B4"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-plus"/></svg></span>
+          <h3>La pulsation</h3>
+          <p>Fusionne deux tuiles du dernier palier : tout le plateau s'illumine, repart à zéro et t'offre un gros bonus.</p>
+        </div>
+        <div class="feature-card">
+          <span class="tile sm" style="--c:#FF9D29"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-hexagon"/></svg></span>
+          <h3>Mode Survie</h3>
+          <p>Chaque pulsation bloque une case pour de bon. Le plateau se resserre jusqu'au dernier souffle.</p>
+        </div>
+        <div class="feature-card">
+          <span class="tile sm" style="--c:#29C7FF"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-square"/></svg></span>
+          <h3>3 tailles, des records</h3>
+          <p>3×3, 4×4 ou 5×5, chacune avec son record. Tes statistiques restent sur ton téléphone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 DamDes Studio</span>
+    <a href="legal/">Politique de confidentialité</a>
+  </div>
+</footer>
+
+</body>
+</html>
